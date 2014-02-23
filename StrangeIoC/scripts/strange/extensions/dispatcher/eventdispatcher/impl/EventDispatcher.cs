@@ -84,6 +84,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		{
 			//Scrub the data to make eventType and data conform if possible
 			IEvent evt = conformDataToEvent (eventType, data);
+			Console.WriteLine (evt.type);
 
 			if (evt is IPoolable)
 			{
@@ -96,7 +97,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 				isTriggeringClients = true;
 				foreach (ITriggerable trigger in triggerClients)
 				{
-					if (!trigger.Trigger(eventType, evt))
+					if (!trigger.Trigger(evt.type, evt))
 					{
 						continueDispatch = false;
 						break;
@@ -115,7 +116,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 				return;
 			}
 
-			IEventBinding binding = GetBinding (eventType) as IEventBinding;
+			IEventBinding binding = GetBinding (evt.type) as IEventBinding;
 			if (binding == null)
 			{
 				internalReleaseEvent (evt);
@@ -164,6 +165,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 			{
 				//Client provided a full-formed event
 				retv = (IEvent)eventType;
+				retv.target = this;
 			}
 			else if (data == null)
 			{
@@ -174,6 +176,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 			{
 				//Client provided both an evertType and a full-formed IEvent
 				retv = (IEvent)data;
+				retv.target = this;
 			}
 			else
 			{
@@ -211,6 +214,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		public void AddListener(object evt, EventCallback callback)
 		{
 			IBinding binding = GetBinding (evt);
+			Console.WriteLine ("Adding listener for: " + evt.ToString ());
 			if (binding == null)
 			{
 				Bind (evt).To (callback);

@@ -45,6 +45,7 @@ namespace strange.extensions.context.impl
 		
 		public ContextView ()
 		{
+			
 		}
 
 		/// <summary>

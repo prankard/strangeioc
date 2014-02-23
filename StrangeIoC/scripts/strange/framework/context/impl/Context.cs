@@ -3,6 +3,7 @@ using strange.framework.impl;
 using strange.extensions.injector.api;
 using strange.extensions.injector.impl;
 using strange.framework.context.api;
+using strange.context.api;
 
 namespace strange.framework.context.impl
 {
@@ -13,13 +14,25 @@ namespace strange.framework.context.impl
 		private ConfigManager _configManager;
 		private ExtensionInstaller _extensionInstaller;
 		public IInjectionBinder _injectionBinder;
+		
+		private ContextStateCallback _preInitilizeCallback;
+		private ContextStateCallback _postInitializeCallback;
+		private ContextStateCallback _preDestroyCallback;
+		private ContextStateCallback _postDestroyCallback;
 
 		public Context ()
 		{
 			_extensionInstaller = new ExtensionInstaller (this);
 			_configManager = new ConfigManager (this);
+
 			_injectionBinder = new InjectionBinder ();
 			_injectionBinder.Bind<IInjectionBinder> ().ToValue (_injectionBinder);
+
+			_preInitilizeCallback = new ContextStateCallback ();
+			_postInitializeCallback = new ContextStateCallback ();
+			_preDestroyCallback = new ContextStateCallback ();
+			_postDestroyCallback = new ContextStateCallback ();
+
 			Console.WriteLine ("Init Context");
 		}
 
@@ -35,10 +48,13 @@ namespace strange.framework.context.impl
 
 		public IContext Initialize()
 		{
+			PreInitialized();
+
 			_configManager.ConfigureAll ();
 			_initialized = true;
 			Console.WriteLine ("Initalize");
-			// Dispatch
+			
+			PostInitialized ();
 			return this;
 		}
 
@@ -48,9 +64,73 @@ namespace strange.framework.context.impl
 			return this;
 		}
 
-		public IContext Configure<T>() where T : IConfig
+		public IContext Configure<T>() where T : class
 		{
 			_configManager.AddConfig<T>();
+			return this;
+		}
+
+		public IContext Configure(params object[] objects)
+		{
+			foreach (Object obj in objects)
+				_configManager.AddConfig(obj);
+			return this;
+		}
+
+		// Handle this process match from the config
+		public IContext AddConfigHandler(IMatcher matcher, strange.framework.context.impl.ConfigManager.ProcessMatch handler)
+		{
+			_configManager.AddHandler (matcher, handler);
+			return this;
+		}
+
+
+		// The states the context goes through in order
+
+		// New Context uninitialized
+		// User installs and runs Extensions
+		// User adds configs
+		// Context gets initialized either by user or a config
+		// Context fires pre-initilized callbacks
+		// Context processes configs
+		// Initialized flag set
+		// Context fires post-initilized callbacks
+
+		// Pre Destroyed
+		// Destroyed
+
+
+		private void PreInitialized()
+		{
+			_preInitilizeCallback.ProcessCallbacks ();
+		}
+
+		private void PostInitialized()
+		{
+			_postInitializeCallback.ProcessCallbacks ();
+		}
+		
+		public IContext AddPreInitializedCallback(ContextStateCallback.CallbackDelegate callback)
+		{
+			_preInitilizeCallback.AddCallback (callback);
+			return this;
+		}
+		
+		public IContext AddPostInitializedCallback(ContextStateCallback.CallbackDelegate callback)
+		{
+			_postInitializeCallback.AddCallback (callback);
+			return this;
+		}
+		
+		public IContext AddPreDestroyCallback(ContextStateCallback.CallbackDelegate callback)
+		{
+			_preDestroyCallback.AddCallback (callback);
+			return this;
+		}
+		
+		public IContext AddPostDestroyCallback(ContextStateCallback.CallbackDelegate callback)
+		{
+			_postDestroyCallback.AddCallback (callback);
 			return this;
 		}
 	}

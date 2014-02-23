@@ -6,8 +6,12 @@ using strange.extensions.dispatcher.eventdispatcher.api;
 using strange.extensions.dispatcher.eventdispatcher.impl;
 using strange.extensions.sequencer.api;
 using strange.extensions.sequencer.impl;
-using strange.framework.context.api;
 using strange.extensions.dispatcher.api;
+using stange.extensions.dispatcher;
+using strange.extensions.dispatcher;
+using strange.extensions.sequencer;
+using strange.extensions.command;
+using stange.extensions.contextview;
 
 namespace strange.bundle
 {
@@ -16,27 +20,20 @@ namespace strange.bundle
 		public void Extend(IContext context)
 		{
 			context.injectionBinder.Bind<IContext>().ToValue(context).ToName(ContextKeys.CONTEXT);
-			context.injectionBinder.Bind<ICommandBinder>().To<EventCommandBinder>().ToSingleton();
-			//This binding is for local dispatchers
-			context.injectionBinder.Bind<IEventDispatcher>().To<EventDispatcher>();
-			//This binding is for the common system bus
-			context.injectionBinder.Bind<IEventDispatcher>().To<EventDispatcher>().ToSingleton().ToName(ContextKeys.CONTEXT_DISPATCHER);
+			context.Install<EventCommandBinderExtension>();
+
+			context.Install<DispatcherExtension> ();
+			context.Configure<ContextDispatcherConfig> ();
+
 			//context.injectionBinder.Bind<IMediationBinder>().To<MediationBinder>().ToSingleton();
-			context.injectionBinder.Bind<ISequencer>().To<EventSequencer>().ToSingleton();
+			context.Install<SequencerExtension>();
 			//context.injectionBinder.Bind<IImplicitBinder>().To<ImplicitBinder>().ToSingleton();
 
-
-
+			context.Install<ContextViewExtension> ();
 			//injectionBinder.Bind<GameObject>().ToValue(contextView).ToName(ContextKeys.CONTEXT_VIEW);
-			ICommandBinder commandBinder = context.injectionBinder.GetInstance<ICommandBinder>() as ICommandBinder;
-			
-			IEventDispatcher dispatcher = context.injectionBinder.GetInstance<IEventDispatcher>(ContextKeys.CONTEXT_DISPATCHER) as IEventDispatcher;
-			//mediationBinder = injectionBinder.GetInstance<IMediationBinder>() as IMediationBinder;
-			ISequencer sequencer = context.injectionBinder.GetInstance<ISequencer>() as ISequencer;
-			//implicitBinder = injectionBinder.GetInstance<IImplicitBinder>() as IImplicitBinder;
-			
-			(dispatcher as ITriggerProvider).AddTriggerable(commandBinder as ITriggerable);
-			(dispatcher as ITriggerProvider).AddTriggerable(sequencer as ITriggerable);
+
+			context.Configure<CommandBinderDispatchConfig>();
+			context.Configure<SequencerDispatchConfig>();
 		}
 	}
 }
