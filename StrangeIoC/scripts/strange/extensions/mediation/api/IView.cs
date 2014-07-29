@@ -29,6 +29,8 @@ namespace strange.extensions.mediation.api
 {
 	public interface IView
 	{
+		event Action<IView> RemoveView;
+
 		/// Indicates whether the View can work absent a context
 		/// 
 		/// Leave this value true most of the time. If for some reason you want

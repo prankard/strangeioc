@@ -33,7 +33,7 @@ namespace strange.framework.context.impl
 			_preDestroyCallback = new ContextStateCallback ();
 			_postDestroyCallback = new ContextStateCallback ();
 
-			Console.WriteLine ("Init Context");
+			UnityEngine.Debug.Log ("Init Context");
 		}
 
 		public IInjectionBinder injectionBinder
@@ -50,9 +50,9 @@ namespace strange.framework.context.impl
 		{
 			PreInitialized();
 
-			_configManager.ConfigureAll ();
+			_configManager.Initialize ();
 			_initialized = true;
-			Console.WriteLine ("Initalize");
+			UnityEngine.Debug.Log ("Initalize");
 			
 			PostInitialized ();
 			return this;
@@ -78,9 +78,9 @@ namespace strange.framework.context.impl
 		}
 
 		// Handle this process match from the config
-		public IContext AddConfigHandler(IMatcher matcher, strange.framework.context.impl.ConfigManager.ProcessMatch handler)
+		public IContext AddConfigHandler(IMatcher matcher, Action<object> handler)
 		{
-			_configManager.AddHandler (matcher, handler);
+			_configManager.AddConfigHandler (matcher, handler);
 			return this;
 		}
 
@@ -90,12 +90,14 @@ namespace strange.framework.context.impl
 		// New Context uninitialized
 		// User installs and runs Extensions
 		// User adds configs
+
 		// Context gets initialized either by user or a config
 		// Context fires pre-initilized callbacks
 		// Context processes configs
 		// Initialized flag set
 		// Context fires post-initilized callbacks
-
+		
+		// Context gets destroyed either by user or a config
 		// Pre Destroyed
 		// Destroyed
 

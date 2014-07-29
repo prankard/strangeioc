@@ -43,6 +43,31 @@ namespace strange.extensions.mediation.impl
 		{
 		}
 
+		public void HandleView (object view, Type type)
+		{
+			IMediationBinding binding = GetBinding (type) as IMediationBinding;
+			UnityEngine.Debug.Log("About to map view: " + view.ToString());
+//			UnityEngine.Debug.Log(binding);
+//			UnityEngine.Debug.Log(view);
+//			Trigger(MediationEvent.AWAKE, view as IView);
+			
+			injectionBinder.injector.Inject (view, false);
+
+			(view as IView).RemoveView += OnRemoveView;
+			mapView(view as IView, binding);
+//			mapView(view, binding);
+		}
+
+		void Test (object sender, EventArgs e)
+		{
+
+		}
+
+		private void OnRemoveView(IView view)
+		{
+			view.RemoveView -= OnRemoveView;
+			Trigger(MediationEvent.DESTROYED, view);
+		}
 
 		public override IBinding GetRawBinding ()
 		{

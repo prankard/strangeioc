@@ -66,7 +66,7 @@ namespace strange.framework.context.api
 		/// <returns>The config handler.</returns>
 		/// <param name="matcher">The matching conditions run on all configs</param>
 		/// <param name="handler">The process match function to run when the match has succeded on a config</param>
-		IContext AddConfigHandler(IMatcher matcher, ConfigManager.ProcessMatch handler);
+		IContext AddConfigHandler(IMatcher matcher, Action<object> handler);
 	}
 }
 

@@ -35,7 +35,7 @@
 	* @see strange.extensions.dispatcher.api.ITriggerable
 	*/
 
-	using System;
+using System;
 using System.Collections.Generic;
 using strange.framework.api;
 using strange.framework.impl;
@@ -84,7 +84,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		{
 			//Scrub the data to make eventType and data conform if possible
 			IEvent evt = conformDataToEvent (eventType, data);
-			Console.WriteLine (evt.type);
+			UnityEngine.Debug.Log (evt.type);
 
 			if (evt is IPoolable)
 			{
@@ -214,7 +214,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		public void AddListener(object evt, EventCallback callback)
 		{
 			IBinding binding = GetBinding (evt);
-			Console.WriteLine ("Adding listener for: " + evt.ToString ());
+			UnityEngine.Debug.Log ("Adding listener for: " + evt.ToString ());
 			if (binding == null)
 			{
 				Bind (evt).To (callback);

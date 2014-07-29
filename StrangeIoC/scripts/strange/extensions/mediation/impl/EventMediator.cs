@@ -22,8 +22,8 @@
  */
 
 using System;
-using strange.extensions.context.api;
 using strange.extensions.dispatcher.eventdispatcher.api;
+using strange.framework.context.api;
 
 namespace strange.extensions.mediation.impl
 {

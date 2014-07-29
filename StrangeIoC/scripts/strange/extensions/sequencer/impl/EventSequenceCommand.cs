@@ -21,16 +21,16 @@
  */
 
 using System;
-using strange.extensions.context.api;
 using strange.extensions.dispatcher.eventdispatcher.api;
 using strange.extensions.sequencer.impl;
+using strange.framework.context.api;
 
 namespace strange.extensions.sequencer.impl
 {
 	public class EventSequenceCommand : SequenceCommand
 	{
 		/// The context-wide Event bus
-		[Inject(ContextKeys.CONTEXT_DISPATCHER)]
+		/// [Inject(ContextKeys.CONTEXT_DISPATCHER)]
 		public IEventDispatcher dispatcher{ get; set;}
 
 		/// The injected IEvent

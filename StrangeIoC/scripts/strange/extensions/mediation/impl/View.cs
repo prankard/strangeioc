@@ -24,14 +24,16 @@
  */
 
 using UnityEngine;
-using strange.extensions.context.api;
-using strange.extensions.context.impl;
 using strange.extensions.mediation.api;
+using strange.extensions.viewManager.impl;
+using System;
 
 namespace strange.extensions.mediation.impl
 {
 	public class View : MonoBehaviour, IView
 	{
+		public event Action<IView> RemoveView;
+
 		/// Leave this value true most of the time. If for some reason you want
 		/// a view to exist outside a context you can set it to false. The only
 		/// difference is whether an error gets generated.
@@ -68,8 +70,8 @@ namespace strange.extensions.mediation.impl
 		/// The View will attempt to connect to the Context at this moment.
 		protected virtual void Awake ()
 		{
-			if (autoRegisterWithContext && !registeredWithContext)
-				bubbleToContext(this, true, false);
+//			if (autoRegisterWithContext && !registeredWithContext)
+//				bubbleToContext(this, true, false);
 		}
 
 		/// A MonoBehaviour Start handler
@@ -77,8 +79,10 @@ namespace strange.extensions.mediation.impl
 		/// attempt to connect again at this moment.
 		protected virtual void Start ()
 		{
-			if (autoRegisterWithContext && !registeredWithContext)
-				bubbleToContext(this, true, true);
+			Debug.Log("View Start");
+			ContainerRegistry.HandleView(this, this.GetType());
+//			if (autoRegisterWithContext && !registeredWithContext)
+//				bubbleToContext(this, true, true);
 		}
 
 		/// A MonoBehaviour OnDestroy handler
@@ -86,12 +90,15 @@ namespace strange.extensions.mediation.impl
 		/// destroyed.
 		protected virtual void OnDestroy ()
 		{
-			bubbleToContext(this, false, false);
+//			bubbleToContext(this, false, false);
+			if (RemoveView != null)
+				RemoveView(this);
 		}
 
 		/// Recurses through Transform.parent to find the GameObject to which ContextView is attached
 		/// Has a loop limit of 100 levels.
 		/// By default, raises an Exception if no Context is found.
+		/*
 		virtual protected void bubbleToContext(MonoBehaviour view, bool toAdd, bool finalTry)
 		{
 			const int LOOP_MAX = 100;
@@ -140,6 +147,7 @@ namespace strange.extensions.mediation.impl
 					MediationExceptionType.NO_CONTEXT);
 			}
 		}
+		*/
 	}
 }
 

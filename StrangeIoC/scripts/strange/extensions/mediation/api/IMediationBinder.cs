@@ -65,10 +65,11 @@
 using System;
 using strange.framework.api;
 using UnityEngine;
+using strange.extensions.viewManager.api;
 
 namespace strange.extensions.mediation.api
 {
-	public interface IMediationBinder : IBinder
+	public interface IMediationBinder : IBinder, IViewHandler
 	{
 		/// An event that just happened, and the View it happened to.
 		/// If the event was Awake, it will trigger creation of a mapped Mediator.

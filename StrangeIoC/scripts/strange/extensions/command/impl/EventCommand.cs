@@ -24,7 +24,6 @@
  */
 
 using System;
-using strange.extensions.context.api;
 using strange.extensions.dispatcher.eventdispatcher.api;
 using strange.extensions.command.impl;
 using strange.extensions.pool.api;
@@ -33,7 +32,7 @@ namespace strange.extensions.command.impl
 {
 	public class EventCommand : Command
 	{
-		[Inject(ContextKeys.CONTEXT_DISPATCHER)]
+		[Inject(strange.framework.context.api.ContextKeys.CONTEXT_DISPATCHER)]
 		public IEventDispatcher dispatcher{ get; set;}
 
 		[Inject]

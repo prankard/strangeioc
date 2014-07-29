@@ -9,19 +9,20 @@ namespace strange.framework.context.impl
 	{
 		public delegate void ProcessMatch(object obj);
 
-		public IContext context;
-		public List<object> configs;
+		private bool _initialized = false;
 
-		public List<MatchHandler> matchHandlers;
+		public IContext context;
+		private List<object> _configs = new List<object>();
+		private List<object> _queue = new List<object>();
+
+		public ObjectProcessor _objectProcessor = new ObjectProcessor();
 
 		public ConfigManager (IContext context)
 		{
 			this.context = context;
-			configs = new List<object> ();
-			matchHandlers = new List<MatchHandler> ();
 			
-			AddHandler (new MatchType (), ProcessIConfigType);
-			AddHandler (new MatchIConfig (), ProcessIConfig);
+			AddConfigHandler (new MatchTypeIConfig (), HandleIConfigType);
+			AddConfigHandler (new MatchIConfig (), HandleIConfigObject);
 		}
 
 		public void AddConfig<T>() where T : class
@@ -29,76 +30,96 @@ namespace strange.framework.context.impl
 			AddConfig (typeof(T));
 		}
 
-		public void AddConfig(object obj)
+		public void AddConfig(object config)
 		{
-			configs.Add (obj);
+			UnityEngine.Debug.Log("Added config: " + config);
 
-			if (context.initialized)
-				Configure (obj);
+			if (!_configs.Contains(config))
+			{
+				_configs.Add(config);
+				_objectProcessor.ProcessObject(config);
+			}
+		}
+		
+		public void AddConfigHandler(IMatcher matcher, Action<object> process)
+		{
+			_objectProcessor.AddObjectHandler(matcher, process);
 		}
 
-		public void ConfigureAll ()
+		public void Destroy()
 		{
-			foreach (object config in configs) 
+			_objectProcessor.RemoveAllHandlers();
+			_configs.Clear();
+		}
+		
+		public void Initialize()
+		{
+			if (!_initialized)
 			{
-				Configure(config);
+				_initialized = true;
+				ProcessQueue();
 			}
 		}
 
-		private void Configure(object config)
+		private void ProcessQueue()
 		{
-			foreach (MatchHandler matchHandler in matchHandlers) 
+			foreach (object config in _queue)
 			{
-				if (matchHandler.matcher.Matches(config))
-					matchHandler.process(config);
+				if (config is Type)
+					ProcessIConfigType(config);
+				else
+					ProcessIConfigObject(config);
 			}
+			_queue.Clear();
 		}
 
-		public void AddHandler(IMatcher matcher, ProcessMatch process)
+		private void HandleIConfigType(object config)
 		{
-			MatchHandler matchHandler;
-			matchHandler.matcher = matcher;
-			matchHandler.process = process;
-			matchHandlers.Add (matchHandler);
+			if (_initialized)
+				ProcessIConfigType(config);
+			else
+				_queue.Add(config);
 		}
 
-		public struct MatchHandler
+		private void HandleIConfigObject(object config)
 		{
-			public IMatcher matcher;
-			public ProcessMatch process;
+			if (_initialized)
+				ProcessIConfigObject(config);
+			else
+				_queue.Add(config);
 		}
 
-		public void ProcessIConfigType(object obj)
+		private void ProcessIConfigType(object config)
 		{
-			Type type = obj as Type;
+			Type type = config as Type;
 			
 			context.injectionBinder.Bind<IConfig>().To(type);
-			IConfig config = context.injectionBinder.GetInstance<IConfig> ();
+			IConfig typedConfig = context.injectionBinder.GetInstance<IConfig> ();
 			context.injectionBinder.Unbind<IConfig> ();
 
-			if (config != null) config.Configure ();
+			if (typedConfig != null) typedConfig.Configure ();
 		}
 
-		public void ProcessIConfig(object obj)
+		private void ProcessIConfigObject(object config)
 		{
-			// This injection binder trick doesn't work.
+			//TODO: This injection binder trick doesn't work.
 			// We will need to re-process the injection so new injection rules will be handled for 
 			// objects that have already been instatiated.
 
-			IConfig config = obj as IConfig;
-			context.injectionBinder.Bind<IConfig> ().ToValue(config);
-			config = context.injectionBinder.GetInstance<IConfig> ();
+			IConfig typedConfig = config as IConfig;
+			context.injectionBinder.Bind<IConfig> ().ToValue(typedConfig);
+			typedConfig = context.injectionBinder.GetInstance<IConfig> ();
 			context.injectionBinder.Unbind<IConfig> ();
 
-			if (config != null) config.Configure ();
+			if (typedConfig != null) typedConfig.Configure ();
 		}
 	}
 	
-	public class MatchType : IMatcher
+	public class MatchTypeIConfig : IMatcher
 	{
 		public bool Matches(object obj)
 		{
-			return obj is Type;
+			return (obj is Type && typeof(IConfig).IsAssignableFrom(obj as Type));
 		}
 	}
 	

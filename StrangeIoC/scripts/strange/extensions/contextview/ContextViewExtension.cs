@@ -2,6 +2,7 @@ using System;
 using strange.framework.context.api;
 using strange.extensions.injector.api;
 using strange.extensions.contextview.impl;
+using strange.extensions.contextview.api;
 using strange.context.api;
 
 namespace stange.extensions.contextview
@@ -18,7 +19,7 @@ namespace stange.extensions.contextview
 		public void Extend(IContext context)
 		{
 			_injectionBinder = context.injectionBinder;
-			Console.WriteLine ("Context view extension");
+			UnityEngine.Debug.Log ("Context view extension");
 			context.AddPostInitializedCallback (CheckInjection);
 			context.AddConfigHandler(new CheckType (typeof(ContextView)), AddContextView);
 		}
@@ -32,18 +33,19 @@ namespace stange.extensions.contextview
 		{
 			if (!HasContextBinding ()) 
 			{
-				Console.WriteLine("Adding Context View");
+				UnityEngine.Debug.Log("Adding Context View");
 				_injectionBinder.Bind<ContextView> ().To (contextView);
+				_injectionBinder.Bind<IContextView> ().To (contextView);
 			}
 			else
-				Console.WriteLine ("You already have a context bound, please only use one contextview per context");
+				UnityEngine.Debug.Log ("You already have a context bound, please only use one contextview per context");
 		}
 
 		private void CheckInjection()
 		{
 			if (!HasContextBinding ()) 
 			{
-				Console.WriteLine("Warning, you initilaized the context without a context view when the context view extension was installed");
+				UnityEngine.Debug.Log("Warning, you initilaized the context without a context view when the context view extension was installed");
 			}
 		}
 	}
