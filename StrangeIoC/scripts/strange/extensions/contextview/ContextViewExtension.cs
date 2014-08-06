@@ -4,6 +4,7 @@ using strange.extensions.injector.api;
 using strange.extensions.contextview.impl;
 using strange.extensions.contextview.api;
 using strange.context.api;
+using strange.extensions.matching;
 
 namespace stange.extensions.contextview
 {
@@ -21,7 +22,7 @@ namespace stange.extensions.contextview
 			_injectionBinder = context.injectionBinder;
 			UnityEngine.Debug.Log ("Context view extension");
 			context.AddPostInitializedCallback (CheckInjection);
-			context.AddConfigHandler(new CheckType (typeof(ContextView)), AddContextView);
+			context.AddConfigHandler(new InstanceOfMatcher (typeof(ContextView)), AddContextView);
 		}
 		
 		private bool HasContextBinding()
@@ -47,23 +48,6 @@ namespace stange.extensions.contextview
 			{
 				UnityEngine.Debug.Log("Warning, you initilaized the context without a context view when the context view extension was installed");
 			}
-		}
-	}
-	
-	public class CheckType : IMatcher
-	{
-		private Type _type;
-
-		public CheckType(Type type)
-		{
-			this._type = type;
-		}
-
-		public bool Matches(object obj)
-		{
-			if (obj.GetType () == _type)
-				return true;
-			return false;
 		}
 	}
 }
