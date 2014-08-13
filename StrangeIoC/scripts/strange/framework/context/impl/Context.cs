@@ -52,7 +52,7 @@ namespace strange.framework.context.impl
 
 			_configManager.Initialize ();
 			_initialized = true;
-			UnityEngine.Debug.Log ("Initalize");
+//			UnityEngine.Debug.Log ("Initalize");
 			
 			PostInitialized ();
 			return this;

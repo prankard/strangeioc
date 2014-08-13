@@ -42,6 +42,15 @@ namespace strange.extensions.injector.impl
 			injector.binder = this;
 			injector.reflector = new ReflectionBinder ();
 		}
+		
+		private const string INSTANTIATE_UNMAPPED_NAME = "instantiateUnmapped"; 
+		public object InstantiateUnmapped(Type type)
+		{
+			Bind(type).ToName(INSTANTIATE_UNMAPPED_NAME);
+			object instance = GetInstance(type, INSTANTIATE_UNMAPPED_NAME);
+			Unbind(type, INSTANTIATE_UNMAPPED_NAME);
+			return instance;
+		}
 
 		public object GetInstance(Type key)
 		{

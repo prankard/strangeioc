@@ -65,6 +65,8 @@ namespace strange.extensions.injector.api
 {
 	public interface IInjectionBinder : IInstanceProvider
 	{
+		object InstantiateUnmapped(Type type);
+
 		/// Get or set an Injector to use. By default, Injector instantiates it's own, but that can be overridden.
 		IInjector injector{ get; set;}
 

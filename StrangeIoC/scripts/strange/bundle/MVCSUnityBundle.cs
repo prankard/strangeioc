@@ -12,9 +12,9 @@ using strange.extensions.dispatcher;
 using strange.extensions.sequencer;
 using strange.extensions.command;
 using stange.extensions.contextview;
-using strange.extensions.mediation;
 using strange.extensions.contextview;
 using strange.extensions.viewManager;
+using strange.extensions.mediatorMap;
 
 namespace strange.bundle
 {
@@ -36,7 +36,7 @@ namespace strange.bundle
 			//injectionBinder.Bind<GameObject>().ToValue(contextView).ToName(ContextKeys.CONTEXT_VIEW);
 
 			context.Install<ViewManagerExtension>();
-			context.Install<MediationBinderExtension>();
+			context.Install<MediatorMapExtension>();
 
 			context.Configure<ContextViewListenerConfig>();
 			context.Configure<CommandBinderDispatchConfig>();

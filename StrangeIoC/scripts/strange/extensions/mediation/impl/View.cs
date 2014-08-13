@@ -24,9 +24,9 @@
  */
 
 using UnityEngine;
-using strange.extensions.mediation.api;
-using strange.extensions.viewManager.impl;
 using System;
+using strange.extensions.mediatorMap.api;
+using strange.extensions.viewManager.impl;
 
 namespace strange.extensions.mediation.impl
 {

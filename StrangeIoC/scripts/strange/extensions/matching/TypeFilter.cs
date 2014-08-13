@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace strange.extensions.matching
 {
-	public class TypeFilter : ITypeFilter
+	public class TypeFilter : ITypeFilter //TODO: Consider renaming this due to conflicts with System.Reflection.TypeFilter
 	{
 		protected List<Type> allOfTypes;
 
@@ -72,14 +72,14 @@ namespace strange.extensions.matching
 			int i = allOfTypes.Count;
 			while (i-- != 0)
 			{
-				if (!itemType.IsAssignableFrom(allOfTypes[i]))
+				if (!allOfTypes[i].IsAssignableFrom(itemType))
 					return false;
 			}
 			
 			i = noneOfTypes.Count;
 			while (i-- != 0)
 			{
-				if (itemType.IsAssignableFrom(noneOfTypes[i]))
+				if (noneOfTypes[i].IsAssignableFrom(itemType))
 					return false;
 			}
 
@@ -89,7 +89,7 @@ namespace strange.extensions.matching
 			i = anyOfTypes.Count;
 			while (i-- != 0)
 			{
-				if (itemType.IsAssignableFrom(anyOfTypes[i]))
+				if (anyOfTypes[i].IsAssignableFrom(itemType))
 					return true;
 			}
 

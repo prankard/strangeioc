@@ -30,6 +30,7 @@ using strange.extensions.injector.api;
 using strange.extensions.mediation.api;
 using strange.framework.api;
 using strange.framework.impl;
+using strange.extensions.mediatorMap.api;
 
 namespace strange.extensions.mediation.impl
 {
@@ -155,13 +156,13 @@ namespace strange.extensions.mediation.impl
 					MonoBehaviour mediator = mono.gameObject.AddComponent(mediatorType) as MonoBehaviour;
 					if (mediator == null)
 						throw new MediationException ("The view: " + viewType.ToString() + " is mapped to mediator: " + mediatorType.ToString() + ". AddComponent resulted in null, which probably means " + mediatorType.ToString().Substring(mediatorType.ToString().LastIndexOf(".")+1) + " is not a MonoBehaviour.", MediationExceptionType.NULL_MEDIATOR);
-					if (mediator is IMediator)
-						((IMediator)mediator).PreRegister ();
+					if (mediator is strange.extensions.mediation.api.IMediator)
+						((strange.extensions.mediation.api.IMediator)mediator).PreRegister ();
 					injectionBinder.Bind (viewType).ToValue (view).ToInject(false);
 					injectionBinder.injector.Inject (mediator);
 					injectionBinder.Unbind(viewType);
-					if (mediator is IMediator)
-						((IMediator)mediator).OnRegister ();
+					if (mediator is strange.extensions.mediation.api.IMediator)
+						((strange.extensions.mediation.api.IMediator)mediator).OnRegister ();
 				}
 			}
 		}
@@ -179,7 +180,7 @@ namespace strange.extensions.mediation.impl
 				{
 					Type mediatorType = values[a] as Type;
 					MonoBehaviour mono = view as MonoBehaviour;
-					IMediator mediator = mono.GetComponent(mediatorType) as IMediator;
+					strange.extensions.mediation.api.IMediator mediator = mono.GetComponent(mediatorType) as strange.extensions.mediation.api.IMediator;
 					if (mediator != null)
 					{
 						mediator.OnRemove();
