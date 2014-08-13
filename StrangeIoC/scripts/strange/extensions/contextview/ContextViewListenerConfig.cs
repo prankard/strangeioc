@@ -27,7 +27,6 @@ namespace strange.extensions.contextview
 
 		public void Configure ()
 		{
-			UnityEngine.Debug.Log("--> ContextViewListenerConfig");
 			viewManager.AddContainer(contextView.view);
 		}
 

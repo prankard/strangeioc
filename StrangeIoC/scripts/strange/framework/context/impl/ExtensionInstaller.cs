@@ -7,14 +7,30 @@ namespace strange.framework.context.impl
 {
 	public class ExtensionInstaller
 	{
-		public Context context;
-		public Dictionary <Type, IExtension> dict;
+		
+		/*============================================================================*/
+		/* Private Properties                                                         */
+		/*============================================================================*/
+		
+		public Dictionary <Type, IExtension> _extensions = new Dictionary<Type, IExtension> ();
+
+		public Context _context;
+
+		private ILogger _logger;
+
+		/*============================================================================*/
+		/* Constructor                                                                */
+		/*============================================================================*/
 
 		public ExtensionInstaller (Context context)
 		{
-			this.context = context;
-			dict = new Dictionary<Type, IExtension> ();
+			_context = context;
+			_logger = _context.GetLogger(this);
 		}
+		
+		/*============================================================================*/
+		/* Public Functions                                                           */
+		/*============================================================================*/
 
 		public void Install<T>() where T : IExtension
 		{
@@ -24,19 +40,25 @@ namespace strange.framework.context.impl
 		public void Install(IExtension extension)
 		{
 			Type extensionType = extension.GetType();
-			if (!dict.ContainsKey(extensionType)) 
+			if (!_extensions.ContainsKey(extensionType)) 
 			{
-				dict.Add (extensionType, extension);
-				extension.Extend (context);
+				_extensions.Add (extensionType, extension);
+				_logger.Debug("Installing extension {0}", extension);
+				extension.Extend (_context);
 			}
 		}
 
-		private void Install(object obj)
+		public void Install(object obj)
 		{
-			context.injectionBinder.Bind<IExtension>().To(obj);
-			IExtension extension = context.injectionBinder.GetInstance<IExtension> ();
-			context.injectionBinder.Unbind<IExtension> ();
+			_context.injectionBinder.Bind<IExtension>().To(obj);
+			IExtension extension = _context.injectionBinder.GetInstance<IExtension> ();
+			_context.injectionBinder.Unbind<IExtension> ();
 			Install(extension);
+		}
+
+		public void Destroy()
+		{
+			_extensions.Clear();
 		}
 	}
 }

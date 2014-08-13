@@ -35,7 +35,6 @@ namespace strange.extensions.mediatorMap
 		public void Extend(IContext context)
 		{
 			_injector = context.injectionBinder;
-			UnityEngine.Debug.Log(_injector.GetBinding<IMediatorMap>());
 
 			// TODO: Make the injection binder work on the next line
 //			_injector.Bind<IMediatorMap>().To<MediatorMap>().ToSingleton();

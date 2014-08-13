@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System;
 using strange.extensions.mediatorMap.api;
 using strange.extensions.mediatorMap.dsl;
+using strange.framework.context.api;
 
 namespace strange.extensions.mediatorMap.impl
 {
@@ -28,17 +29,17 @@ namespace strange.extensions.mediatorMap.impl
 		
 		private MediatorViewHandler _handler;
 		
-//		private ILogger _logger;
+		private ILogger _logger;
 
 		/*============================================================================*/
 		/* Constructor                                                                */
 		/*============================================================================*/
 
-		public MediatorMapper (ITypeFilter typeFilter, MediatorViewHandler handler/*, ILogger logger = null*/)
+		public MediatorMapper (ITypeFilter typeFilter, MediatorViewHandler handler, ILogger logger)
 		{
 			_typeFilter = typeFilter;
 			_handler = handler;
-//			_logger = logger;
+			_logger = logger;
 		}
 
 		/*============================================================================*/
@@ -75,6 +76,8 @@ namespace strange.extensions.mediatorMap.impl
 			MediatorMapping mapping = new MediatorMapping (_typeFilter, mediatorType);
 			_handler.AddMapping (mapping);
 			_mappings [mediatorType] = mapping;
+			if (_logger != null)
+				_logger.Debug("{0} mapped to {1}", _typeFilter, mapping);
 			return mapping;
 		}
 		
@@ -82,11 +85,17 @@ namespace strange.extensions.mediatorMap.impl
 		{
 			_handler.RemoveMapping (mapping);
 			_mappings.Remove (mapping.MediatorType);
+			if (_logger != null)
+				_logger.Debug("0} unmapped from {1}", _typeFilter, mapping);
 		}
 
 		private IMediatorConfigurator OverwriteMapping(IMediatorMapping mapping)
 		{
-			UnityEngine.Debug.Log ("Already mapped to " + _typeFilter.ToString () + ". Overwritting old mapping");
+			if (_logger != null)
+				_logger.Warn("{0} already mapped to {1}\n" +
+			                        "If you have overridden this mapping intentionally you can use 'unmap()' " +
+			                        "prior to your replacement mapping in order to avoid seeing this message.\n",
+			                        _typeFilter, mapping);
 			DeleteMapping (mapping);
 			return CreateMapping(mapping.MediatorType);
 		}

@@ -13,7 +13,6 @@ namespace stange.extensions.dispatcher
 
 		public void Configure()
 		{
-			UnityEngine.Debug.Log ("Configure context dispatcher");
 			injectionBinder.Bind<IEventDispatcher>().To<EventDispatcher>().ToSingleton().ToName(ContextKeys.CONTEXT_DISPATCHER);
 		}
 	}

@@ -67,6 +67,20 @@ namespace strange.framework.context.api
 		/// <param name="matcher">The matching conditions run on all configs</param>
 		/// <param name="handler">The process match function to run when the match has succeded on a config</param>
 		IContext AddConfigHandler(IMatcher matcher, Action<object> handler);
+
+		/// <summary>
+		/// Retrieves a logger for a given source
+		/// </summary>
+		/// <returns>this</returns>
+		/// <param name="source">Logging source</param>
+		ILogger GetLogger(Object source);
+
+		/// <summary>
+		/// Adds a custom log target
+		/// </summary>
+		/// <returns>this</returns>
+		/// <param name="target">Log Target</param>
+		IContext AddLogTarget(ILogTarget target);
 	}
 }
 

@@ -15,6 +15,8 @@ using stange.extensions.contextview;
 using strange.extensions.contextview;
 using strange.extensions.viewManager;
 using strange.extensions.mediatorMap;
+using strange.extensions.enhancedLogging;
+using strange.extensions.debugLogging;
 
 namespace strange.bundle
 {
@@ -22,6 +24,9 @@ namespace strange.bundle
 	{
 		public void Extend(IContext context)
 		{
+			context.Install<ConsoleLoggingExtension>();
+			context.Install<DebugLoggingExtension>();
+
 			context.injectionBinder.Bind<IContext>().ToValue(context).ToName(ContextKeys.CONTEXT);
 			context.Install<EventCommandBinderExtension>();
 

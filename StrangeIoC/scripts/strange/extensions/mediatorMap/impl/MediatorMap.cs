@@ -25,7 +25,7 @@ namespace strange.extensions.mediatorMap.impl
 
 		private Dictionary<string, MediatorMapper> _mappers = new Dictionary<string, MediatorMapper>();
 
-//		private ILogger _logger;
+		private ILogger _logger;
 
 		private MediatorFactory _factory;
 
@@ -39,7 +39,7 @@ namespace strange.extensions.mediatorMap.impl
 
 		public MediatorMap (IContext context)
 		{
-//			_logger = context.GetLogger(this);
+			_logger = context.GetLogger(this);
 			_factory = new MediatorFactory(context.injectionBinder, null);
 			_viewHandler = new MediatorViewHandler(_factory);
 		}
@@ -99,7 +99,7 @@ namespace strange.extensions.mediatorMap.impl
 
 		private MediatorMapper CreateMapper(ITypeMatcher matcher)
 		{
-			return new MediatorMapper(matcher.CreateTypeFilter(), _viewHandler /*_logger*/);
+			return new MediatorMapper(matcher.CreateTypeFilter(), _viewHandler, _logger);
 		}
 	}
 }

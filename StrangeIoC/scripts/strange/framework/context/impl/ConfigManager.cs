@@ -2,28 +2,48 @@ using System;
 using System.Collections.Generic;
 using strange.framework.context.api;
 using strange.context.api;
+using strange.extensions.injector.api;
 
 namespace strange.framework.context.impl
 {
 	public class ConfigManager
 	{
-		public delegate void ProcessMatch(object obj);
+		/*============================================================================*/
+		/* Private Properties                                                         */
+		/*============================================================================*/
+		
+		private ObjectProcessor _objectProcessor = new ObjectProcessor();
 
-		private bool _initialized = false;
-
-		public IContext context;
 		private List<object> _configs = new List<object>();
+
 		private List<object> _queue = new List<object>();
 
-		public ObjectProcessor _objectProcessor = new ObjectProcessor();
+		private IInjectionBinder _injector;
+
+		private ILogger _logger;
+
+		private bool _initialized = false;
+		
+		public IContext _context;
+		
+		public delegate void ProcessMatch(object obj);
+
+		/*============================================================================*/
+		/* Constructor                                                                */
+		/*============================================================================*/
 
 		public ConfigManager (IContext context)
 		{
-			this.context = context;
-			
+			_context = context;
+			_injector = _context.injectionBinder;
+			_logger = context.GetLogger(this);
 			AddConfigHandler (new MatchTypeIConfig (), HandleIConfigType);
 			AddConfigHandler (new MatchIConfig (), HandleIConfigObject);
 		}
+		
+		/*============================================================================*/
+		/* Public Functions                                                           */
+		/*============================================================================*/
 
 		public void AddConfig<T>() where T : class
 		{
@@ -32,8 +52,6 @@ namespace strange.framework.context.impl
 
 		public void AddConfig(object config)
 		{
-			UnityEngine.Debug.Log("Added config: " + config);
-
 			if (!_configs.Contains(config))
 			{
 				_configs.Add(config);
@@ -60,42 +78,64 @@ namespace strange.framework.context.impl
 				ProcessQueue();
 			}
 		}
-
-		private void ProcessQueue()
-		{
-			foreach (object config in _queue)
-			{
-				if (config is Type)
-					ProcessIConfigType(config);
-				else
-					ProcessIConfigObject(config);
-			}
-			_queue.Clear();
-		}
+		
+		/*============================================================================*/
+		/* Private Functions                                                          */
+		/*============================================================================*/
 
 		private void HandleIConfigType(object config)
 		{
 			if (_initialized)
+			{
+				_logger.Debug("Already initialized. Instantiating config type {0}", config);
 				ProcessIConfigType(config);
+			}
 			else
+			{
+				_logger.Debug("Not yet initialized. Queuing config class {0}", config);
 				_queue.Add(config);
+			}
 		}
 
 		private void HandleIConfigObject(object config)
 		{
 			if (_initialized)
+			{
+				_logger.Debug("Already initialized. Injecting into config object {0}", config);
 				ProcessIConfigObject(config);
+			}
 			else
+			{
+				_logger.Debug("Not yet initialized. Queuing config object {0}", config);
 				_queue.Add(config);
+			}
+		}
+		
+		private void ProcessQueue()
+		{
+			foreach (object config in _queue)
+			{
+				if (config is Type)
+				{
+					_logger.Debug("Now initializing. Instantiating config class {0}", config);
+					ProcessIConfigType(config);
+				}
+				else
+				{
+					_logger.Debug("Now initializing. Injecting into config object {0}", config);
+					ProcessIConfigObject(config);
+				}
+			}
+			_queue.Clear();
 		}
 
 		private void ProcessIConfigType(object config)
 		{
 			Type type = config as Type;
 			
-			context.injectionBinder.Bind<IConfig>().To(type);
-			IConfig typedConfig = context.injectionBinder.GetInstance<IConfig> ();
-			context.injectionBinder.Unbind<IConfig> ();
+			_context.injectionBinder.Bind<IConfig>().To(type);
+			IConfig typedConfig = _context.injectionBinder.GetInstance<IConfig> ();
+			_context.injectionBinder.Unbind<IConfig> ();
 
 			if (typedConfig != null) typedConfig.Configure ();
 		}
@@ -107,9 +147,9 @@ namespace strange.framework.context.impl
 			// objects that have already been instatiated.
 
 			IConfig typedConfig = config as IConfig;
-			context.injectionBinder.Bind<IConfig> ().ToValue(typedConfig);
-			typedConfig = context.injectionBinder.GetInstance<IConfig> ();
-			context.injectionBinder.Unbind<IConfig> ();
+			_context.injectionBinder.Bind<IConfig> ().ToValue(typedConfig);
+			typedConfig = _context.injectionBinder.GetInstance<IConfig> ();
+			_context.injectionBinder.Unbind<IConfig> ();
 
 			if (typedConfig != null) typedConfig.Configure ();
 		}

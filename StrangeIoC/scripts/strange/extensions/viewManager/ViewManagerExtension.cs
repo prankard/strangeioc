@@ -17,18 +17,12 @@ namespace strange.extensions.viewManager
 {
 	public class ViewManagerExtension : IExtension
 	{
-		#region IExtension implementation
-
 		private IViewManager _viewManager;
 
 		public void Extend (IContext context)
 		{
-			UnityEngine.Debug.Log("Installed view manager extension");
 			context.injectionBinder.Bind<IViewManager>().To<ViewManager>().ToSingleton();
-//			context.injectionBinder.Bind(
 		}
-
-		#endregion
 	}
 }
 

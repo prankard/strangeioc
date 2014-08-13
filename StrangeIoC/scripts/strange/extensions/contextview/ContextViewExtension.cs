@@ -8,46 +8,62 @@ using strange.extensions.matching;
 
 namespace stange.extensions.contextview
 {
+	/// <summary>
+	/// <p>This Extension waits for a ContextView to be added as a configuration
+	/// and maps it into the context's injector.</p>
+	///
+	/// <p>It should be installed before context initialization.</p>
+	/// </summary>
 	public class ContextViewExtension : IExtension
 	{
-		private IInjectionBinder _injectionBinder;
+		/*============================================================================*/
+		/* Private Properties                                                         */
+		/*============================================================================*/
 
-		public ContextViewExtension ()
-		{
-
-		}
+		private IInjectionBinder _injector;
+		
+		private ILogger _logger;
+		
+		/*============================================================================*/
+		/* Public Functions                                                           */
+		/*============================================================================*/
 
 		public void Extend(IContext context)
 		{
-			_injectionBinder = context.injectionBinder;
-			UnityEngine.Debug.Log ("Context view extension");
-			context.AddPostInitializedCallback (CheckInjection);
+			_injector = context.injectionBinder;
+			_logger = context.GetLogger(this);
+			context.AddPostInitializedCallback (BeforeInitializing);
 			context.AddConfigHandler(new InstanceOfMatcher (typeof(ContextView)), AddContextView);
 		}
 		
-		private bool HasContextBinding()
-		{
-			return _injectionBinder.GetBinding<ContextView> () != null;
-		}
+		/*============================================================================*/
+		/* Public Functions                                                           */
+		/*============================================================================*/
 
-		public void AddContextView(object contextView)
+		private void AddContextView(object contextViewObject)
 		{
+			ContextView contextView = contextViewObject as ContextView;
 			if (!HasContextBinding ()) 
 			{
-				UnityEngine.Debug.Log("Adding Context View");
-				_injectionBinder.Bind<ContextView> ().To (contextView);
-				_injectionBinder.Bind<IContextView> ().To (contextView);
+				_logger.Debug("Mapping {0} as contextView", contextView.view);
+				_injector.Bind<ContextView> ().To (contextView);
+				_injector.Bind<IContextView> ().To (contextView);
 			}
 			else
-				UnityEngine.Debug.Log ("You already have a context bound, please only use one contextview per context");
+				_logger.Warn("A contextView has already been installed, ignoring {0}", contextView.view);
 		}
 
-		private void CheckInjection()
+		private void BeforeInitializing()
 		{
 			if (!HasContextBinding ()) 
 			{
 				UnityEngine.Debug.Log("Warning, you initilaized the context without a context view when the context view extension was installed");
 			}
+		}
+		
+		private bool HasContextBinding()
+		{
+			return _injector.GetBinding<ContextView> () != null;
 		}
 	}
 }
