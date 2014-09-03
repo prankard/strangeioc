@@ -23,6 +23,7 @@
 
 using System;
 using strange.extensions.dispatcher.eventdispatcher.api;
+using robotlegs.bender.framework.api;
 using strange.framework.context.api;
 
 namespace strange.extensions.mediation.impl

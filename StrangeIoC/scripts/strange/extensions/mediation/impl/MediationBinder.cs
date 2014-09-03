@@ -30,7 +30,7 @@ using strange.extensions.injector.api;
 using strange.extensions.mediation.api;
 using strange.framework.api;
 using strange.framework.impl;
-using strange.extensions.mediatorMap.api;
+using robotlegs.bender.extensions.mediatorMap.api;
 
 namespace strange.extensions.mediation.impl
 {

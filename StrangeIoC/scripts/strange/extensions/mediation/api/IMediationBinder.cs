@@ -65,8 +65,8 @@
 using System;
 using strange.framework.api;
 using UnityEngine;
-using strange.extensions.viewManager.api;
-using strange.extensions.mediatorMap.api;
+using robotlegs.bender.extensions.viewManager.api;
+using robotlegs.bender.extensions.mediatorMap.api;
 
 namespace strange.extensions.mediation.api
 {

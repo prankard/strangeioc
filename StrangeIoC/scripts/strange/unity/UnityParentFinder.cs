@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-using strange.extensions.viewManager;
+using robotlegs.bender.extensions.viewManager;
 using UnityEngine;
 
 

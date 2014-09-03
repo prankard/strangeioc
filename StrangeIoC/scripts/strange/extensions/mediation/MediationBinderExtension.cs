@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-using strange.framework.context.api;
+using robotlegs.bender.framework.api;
 using strange.extensions.mediation.api;
 using strange.extensions.mediation.impl;
 using strange.extensions.injector.api;
-using strange.extensions.viewManager.api;
+using robotlegs.bender.extensions.viewManager.api;
 
 
 namespace strange.extensions.mediation

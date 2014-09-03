@@ -23,7 +23,7 @@
 using System;
 using strange.extensions.dispatcher.eventdispatcher.api;
 using strange.extensions.sequencer.impl;
-using strange.framework.context.api;
+using robotlegs.bender.framework.api;
 
 namespace strange.extensions.sequencer.impl
 {
