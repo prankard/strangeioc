@@ -12,6 +12,12 @@ namespace strange.framework.context.api
 		/// </summary>
 		/// <value>The injection binder.</value>
 		IInjectionBinder injectionBinder { get; }
+		
+		/// <summary>
+		/// Gets or sets the current log level
+		/// </summary>
+		/// <value>The log level</value>
+		LogLevel LogLevel {get;set;}	
 
 		/// <summary>
 		/// Returns if the app has been initialized yet

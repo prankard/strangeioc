@@ -17,6 +17,7 @@ using strange.extensions.viewManager;
 using strange.extensions.mediatorMap;
 using strange.extensions.enhancedLogging;
 using strange.extensions.debugLogging;
+using strange.framework.context.impl;
 
 namespace strange.bundle
 {
@@ -24,6 +25,8 @@ namespace strange.bundle
 	{
 		public void Extend(IContext context)
 		{
+			context.LogLevel = LogLevel.INFO;
+			
 			context.Install<ConsoleLoggingExtension>();
 			context.Install<DebugLoggingExtension>();
 

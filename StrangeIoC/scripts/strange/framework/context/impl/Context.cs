@@ -17,7 +17,19 @@ namespace strange.framework.context.impl
 		{
 			get { return _injectionBinder; }
 		}
-		
+
+		public LogLevel LogLevel
+		{
+			get
+			{
+				return _logManager.logLevel;
+			}
+			set
+			{
+				_logManager.logLevel = value;
+			}
+		}
+
 		public bool initialized
 		{
 			get { return _initialized; }
