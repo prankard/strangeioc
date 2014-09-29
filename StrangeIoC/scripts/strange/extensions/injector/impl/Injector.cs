@@ -140,6 +140,9 @@ namespace strange.extensions.injector.impl
 				return target;
 			}
 
+//			if (target != null)
+//			return target;
+
 			IReflectedClass reflection = reflector.Get (t);
 
 			if (attemptConstructorInjection)
@@ -241,7 +244,8 @@ namespace strange.extensions.injector.impl
 			failIf(target == null, "Attempt to inject into a null target", InjectionExceptionType.NULL_TARGET);
 			failIf(point == null, "Attempt to inject into a null point", InjectionExceptionType.NULL_INJECTION_POINT);
 			failIf(value == null, "Attempt to inject null into a target object", InjectionExceptionType.NULL_VALUE_INJECTION);
-
+			// James Fix, prevent injection again of same item
+			if (point.GetValue(target, null) == null)
 			point.SetValue (target, value, null);
 		}
 

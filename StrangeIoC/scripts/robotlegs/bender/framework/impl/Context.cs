@@ -152,7 +152,7 @@ namespace robotlegs.bender.framework.impl
 		{
 			foreach (object instance in instances)
 			{
-				_pin.Detain(this);
+				_pin.Detain(instance);
 			}
 			return this;
 		}
@@ -161,7 +161,7 @@ namespace robotlegs.bender.framework.impl
 		{
 			foreach (object instance in instances)
 			{
-				_pin.Release(this);
+				_pin.Release(instance);
 			}
 			return this;
 		}

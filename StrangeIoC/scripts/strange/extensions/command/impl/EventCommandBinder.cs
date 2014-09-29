@@ -37,11 +37,21 @@ namespace strange.extensions.command.impl
 		override protected ICommand createCommand(object cmd, object data)
 		{
 			injectionBinder.Bind<ICommand> ().To (cmd);
+			Type dataType = null;
+			bool hasBindingForDataTypeAlready = false;
+			
 			if (data is IEvent)
 			{
 				injectionBinder.Bind<IEvent>().ToValue(data).ToInject(false);
+				
+				dataType = data.GetType();
+				if (injectionBinder.GetBinding(dataType) == null)
+				{
+					hasBindingForDataTypeAlready = true;
+					injectionBinder.Bind(dataType).ToValue(data).ToInject(false);
+				}
 			}
-
+			
 			ICommand command = injectionBinder.GetInstance<ICommand> () as ICommand;
 			if (command == null)
 			{
@@ -54,11 +64,12 @@ namespace strange.extensions.command.impl
 				msg += " could not be instantiated.\nThis might be caused by a null pointer during instantiation or failing to override Execute (generally you shouldn't have constructor code in Commands).";
 				throw new CommandException(msg, CommandExceptionType.BAD_CONSTRUCTOR);
 			}
-
+			
 			command.data = data;
 			if (data is IEvent)
 			{
 				injectionBinder.Unbind<IEvent>();
+				if(hasBindingForDataTypeAlready) injectionBinder.Unbind(dataType);
 			}
 			injectionBinder.Unbind<ICommand> ();
 			return command;

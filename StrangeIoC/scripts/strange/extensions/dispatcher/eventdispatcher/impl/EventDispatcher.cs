@@ -84,7 +84,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		{
 			//Scrub the data to make eventType and data conform if possible
 			IEvent evt = conformDataToEvent (eventType, data);
-			UnityEngine.Debug.Log (evt.type);
+//			UnityEngine.Debug.Log (evt.type);
 
 			if (evt is IPoolable)
 			{
@@ -153,6 +153,13 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 
 			internalReleaseEvent (evt);
 		}
+		
+		virtual protected IEvent convertEvent(object eventObject)
+		{
+			IEvent retv = (IEvent) eventObject;
+			if(retv.target == null) retv.target = this;
+			return retv;
+		}
 
 		virtual protected IEvent conformDataToEvent(object eventType, object data)
 		{
@@ -164,7 +171,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 			else if (eventType is IEvent)
 			{
 				//Client provided a full-formed event
-				retv = (IEvent)eventType;
+				retv = convertEvent(eventType);
 				retv.target = this;
 			}
 			else if (data == null)
@@ -175,7 +182,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 			else if (data is IEvent)
 			{
 				//Client provided both an evertType and a full-formed IEvent
-				retv = (IEvent)data;
+				retv = convertEvent(eventType);
 				retv.target = this;
 			}
 			else
@@ -214,7 +221,7 @@ namespace strange.extensions.dispatcher.eventdispatcher.impl
 		public void AddListener(object evt, EventCallback callback)
 		{
 			IBinding binding = GetBinding (evt);
-			UnityEngine.Debug.Log ("Adding listener for: " + evt.ToString ());
+//			UnityEngine.Debug.Log ("Adding listener for: " + evt.ToString ());
 			if (binding == null)
 			{
 				Bind (evt).To (callback);

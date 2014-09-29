@@ -55,11 +55,14 @@ namespace robotlegs.bender.extensions.mediatorMap.impl
 
 		public List<object> CreateMediators(object item, Type type, List<IMediatorMapping> mappings)
 		{
+//			UnityEngine.Debug.Log("Item : " + item);
+//			UnityEngine.Debug.Log("Count : " + mappings.Count);
 			List<object> createdMediators = new List<object>();
 			object mediator;
 			foreach (IMediatorMapping mapping in mappings)
 			{
 				mediator = GetMediator(item, mapping);
+//				UnityEngine.Debug.Log("Mapping: " + mapping.MediatorType.ToString());
 
 				if (mediator == null)
 				{
@@ -67,6 +70,7 @@ namespace robotlegs.bender.extensions.mediatorMap.impl
 					mediator = CreateMediator(item, mapping);
 					UnmapTypeForFilterBinding(mapping.Matcher, type, item);
 				}
+//				UnityEngine.Debug.Log("Mediator: " + mediator);
 
 				if (mediator != null)
 					createdMediators.Add(mediator);

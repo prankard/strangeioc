@@ -79,7 +79,7 @@ namespace strange.extensions.mediation.impl
 		/// attempt to connect again at this moment.
 		protected virtual void Start ()
 		{
-			Debug.Log("View Start");
+//			Debug.Log("View Start");
 			ContainerRegistry.HandleView(this, this.GetType());
 //			if (autoRegisterWithContext && !registeredWithContext)
 //				bubbleToContext(this, true, true);
